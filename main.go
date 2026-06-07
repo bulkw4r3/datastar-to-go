@@ -39,6 +39,10 @@ func main() {
 	}
 	defer db.Close()
 
+	if _, err := db.Exec(`PRAGMA journal_mode = WAL;`); err != nil {
+		log.Fatal(err)
+	}
+
 	if _, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS numbers (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
