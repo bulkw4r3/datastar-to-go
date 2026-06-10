@@ -43,6 +43,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if _, err := db.Exec(`PRAGMA synchronous = NORMAL;`); err != nil {
+		log.Fatal(err)
+	}
+
 	if _, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS numbers (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
