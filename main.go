@@ -162,6 +162,28 @@ func pageTemplate(content string) string {
 			return t === 'auto'
 				? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
 				: t;
+	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.2/bundles/datastar.js"></script>
+	<style>
+		body {
+			font-family: system-ui, -apple-system, sans-serif;
+			max-width: 700px;
+			margin: 40px auto;
+			padding: 0 20px;
+			background: #f8f9fa;
+			color: #212529;
+		}
+		#app {
+			background: #fff;
+			padding: 24px;
+			border-radius: 8px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+		}
+		h1 {
+			margin-top: 0;
+			font-size: 1.5rem;
+		}
+		.form-group {
+			margin-bottom: 16px;
 		}
 		function apply(t) {
 			document.documentElement.setAttribute('data-theme', resolve(t));

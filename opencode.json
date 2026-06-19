@@ -1,8 +1,9 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "model": "opencode-go/kimi-k2.7-code",
-  "lsp": true,
+  "lsp": false,
   "permission": {
-    "webfetch": "allow"
+    "webfetch": "allow",
+    "websearch": "allow"
   }
 }
