@@ -155,54 +155,16 @@ func pageTemplate(content string) string {
 	<meta name="color-scheme" content="light dark">
 	<title>Number Storage</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-	<script>
-	(function () {
-		var stored = localStorage.getItem('theme') || 'auto';
-		function resolve(t) {
-			return t === 'auto'
-				? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-				: t;
 	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.2/bundles/datastar.js"></script>
 	<style>
-		body {
-			font-family: system-ui, -apple-system, sans-serif;
-			max-width: 700px;
-			margin: 40px auto;
-			padding: 0 20px;
-			background: #f8f9fa;
-			color: #212529;
-		}
-		#app {
-			background: #fff;
-			padding: 24px;
-			border-radius: 8px;
-			box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-		}
-		h1 {
-			margin-top: 0;
-			font-size: 1.5rem;
-		}
-		.form-group {
-			margin-bottom: 16px;
-		}
-		function apply(t) {
-			document.documentElement.setAttribute('data-theme', resolve(t));
-		}
-		apply(stored);
-		window.__applyTheme = apply;
-		window.__initialTheme = stored;
-		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
-			if ((localStorage.getItem('theme') || 'auto') === 'auto') apply('auto');
-		});
-	})();
-	</script>
-	<style>
+		main { padding: 2rem 0; }
 		.app-header {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
 			gap: 1rem;
 			flex-wrap: wrap;
+			margin-bottom: var(--pico-spacing);
 		}
 		.app-header h1 { margin: 0; }
 		.theme-switch {
@@ -224,7 +186,25 @@ func pageTemplate(content string) string {
 		.message.success { color: var(--pico-ins-color); }
 		.empty { color: var(--pico-muted-color); font-style: italic; }
 	</style>
-	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0/bundles/datastar.js"></script>
+	<script>
+	(function () {
+		var stored = localStorage.getItem('theme') || 'auto';
+		function resolve(t) {
+			return t === 'auto'
+				? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+				: t;
+		}
+		function apply(t) {
+			document.documentElement.setAttribute('data-theme', resolve(t));
+		}
+		apply(stored);
+		window.__applyTheme = apply;
+		window.__initialTheme = stored;
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+			if ((localStorage.getItem('theme') || 'auto') === 'auto') apply('auto');
+		});
+	})();
+	</script>
 </head>
 <body>
 	<main class="container">
@@ -232,7 +212,7 @@ func pageTemplate(content string) string {
 			<h1>Number Storage</h1>
 			<div class="theme-switch">
 				<label for="themeSelect">Theme</label>
-				<select id="themeSelect" data-on:change="updateTheme(el.value)">
+				<select id="themeSelect" onchange="updateTheme(this.value)">
 					<option value="auto">Auto</option>
 					<option value="light">Light</option>
 					<option value="dark">Dark</option>
@@ -243,12 +223,12 @@ func pageTemplate(content string) string {
 			` + content + `
 		</div>
 	</main>
-	<script>document.getElementById('themeSelect').value = window.__initialTheme || 'auto';</script>
 	<script>
-	function updateTheme(theme) {
-		localStorage.setItem('theme', theme);
-		window.__applyTheme(theme);
-	}
+		document.getElementById('themeSelect').value = window.__initialTheme || 'auto';
+		function updateTheme(theme) {
+			localStorage.setItem('theme', theme);
+			window.__applyTheme(theme);
+		}
 	</script>
 </body>
 </html>`

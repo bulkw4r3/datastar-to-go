@@ -32,7 +32,7 @@ docker compose up -d --build
 - **SQLite**: `numbers.db` is created on startup (`CREATE TABLE IF NOT EXISTS`).
   Pure-Go driver (`modernc.org/sqlite`) — no CGO required.
 - **Routes**: `GET /` serves the page, `POST /api/numbers` handles form submissions.
-- **Datastar CDN script**: loaded from jsDelivr (beta.11), distinct from the Go library version.
+- **Datastar CDN script**: loaded from jsDelivr (v1.0.2), distinct from the Go library version.
 
 ## Gotchas
 
