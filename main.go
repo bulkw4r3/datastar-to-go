@@ -152,106 +152,82 @@ func pageTemplate(content string) string {
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="color-scheme" content="light dark">
 	<title>Number Storage</title>
-	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0/bundles/datastar.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+	<script>
+	(function () {
+		var stored = localStorage.getItem('theme') || 'auto';
+		function resolve(t) {
+			return t === 'auto'
+				? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+				: t;
+		}
+		function apply(t) {
+			document.documentElement.setAttribute('data-theme', resolve(t));
+		}
+		apply(stored);
+		window.__applyTheme = apply;
+		window.__initialTheme = stored;
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+			if ((localStorage.getItem('theme') || 'auto') === 'auto') apply('auto');
+		});
+	})();
+	</script>
 	<style>
-		body {
-			font-family: system-ui, -apple-system, sans-serif;
-			max-width: 700px;
-			margin: 40px auto;
-			padding: 0 20px;
-			background: #f8f9fa;
-			color: #212529;
+		.app-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+			flex-wrap: wrap;
 		}
-		#app {
-			background: #fff;
-			padding: 24px;
-			border-radius: 8px;
-			box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+		.app-header h1 { margin: 0; }
+		.theme-switch {
+			display: flex;
+			align-items: center;
+			gap: .5rem;
+			margin: 0;
 		}
-		h1 {
-			margin-top: 0;
-			font-size: 1.5rem;
-		}
-		.form-group {
-			margin-bottom: 16px;
-		}
-		label {
-			display: block;
-			margin-bottom: 6px;
-			font-weight: 600;
-			font-size: 0.95rem;
-		}
-		input[type="text"] {
-			width: 100%;
-			padding: 10px 12px;
-			font-size: 1rem;
-			border: 1px solid #ced4da;
-			border-radius: 6px;
-			box-sizing: border-box;
-		}
-		input[type="text"]:focus {
-			outline: none;
-			border-color: #86b7fe;
-			box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
-		}
-		button {
-			padding: 10px 18px;
-			font-size: 1rem;
-			background: #0d6efd;
-			color: #fff;
-			border: none;
-			border-radius: 6px;
-			cursor: pointer;
-		}
-		button:hover {
-			background: #0b5ed7;
-		}
+		.theme-switch label { margin: 0; }
+		.theme-switch select { width: auto; margin: 0; }
 		.message {
-			margin-top: 12px;
-			padding: 10px 12px;
-			border-radius: 6px;
-			font-size: 0.95rem;
+			margin-top: var(--pico-spacing);
+			padding: .75rem 1rem;
+			border-radius: var(--pico-border-radius);
+			border: 1px solid var(--pico-muted-border-color);
+			background: var(--pico-code-background-color);
 		}
-		.message.error {
-			background: #f8d7da;
-			color: #842029;
-			border: 1px solid #f5c2c7;
-		}
-		.message.success {
-			background: #d1e7dd;
-			color: #0f5132;
-			border: 1px solid #badbcc;
-		}
-		table {
-			width: 100%;
-			border-collapse: collapse;
-			margin-top: 20px;
-			font-size: 0.95rem;
-		}
-		th, td {
-			text-align: left;
-			padding: 10px 12px;
-			border-bottom: 1px solid #dee2e6;
-		}
-		th {
-			font-weight: 600;
-			background: #f1f3f5;
-		}
-		tr:hover td {
-			background: #f8f9fa;
-		}
-		.empty {
-			margin-top: 16px;
-			color: #6c757d;
-			font-style: italic;
-		}
+		.message.error { color: var(--pico-del-color); }
+		.message.success { color: var(--pico-ins-color); }
+		.empty { color: var(--pico-muted-color); font-style: italic; }
 	</style>
+	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0/bundles/datastar.js"></script>
 </head>
 <body>
-	<div id="app">
-		` + content + `
-	</div>
+	<main class="container">
+		<header class="app-header">
+			<h1>Number Storage</h1>
+			<div class="theme-switch">
+				<label for="themeSelect">Theme</label>
+				<select id="themeSelect" data-on:change="updateTheme(el.value)">
+					<option value="auto">Auto</option>
+					<option value="light">Light</option>
+					<option value="dark">Dark</option>
+				</select>
+			</div>
+		</header>
+		<div id="app">
+			` + content + `
+		</div>
+	</main>
+	<script>document.getElementById('themeSelect').value = window.__initialTheme || 'auto';</script>
+	<script>
+	function updateTheme(theme) {
+		localStorage.setItem('theme', theme);
+		window.__applyTheme(theme);
+	}
+	</script>
 </body>
 </html>`
 }
@@ -265,16 +241,12 @@ func (a *App) renderAppFragment(msg, errMsg string, signals *Signals, entries []
 	}
 
 	var b strings.Builder
-	b.WriteString(`<h1>Number Storage</h1>`)
+	b.WriteString(`<article>`)
 	b.WriteString(`<form data-on:submit="@post('/api/numbers')">`)
-	b.WriteString(`<div class="form-group">`)
 	b.WriteString(`<label for="sevenDigit">7-Digit Number</label>`)
 	b.WriteString(`<input type="text" id="sevenDigit" data-bind:seven-digit value="` + template.HTMLEscapeString(sevenDigit) + `" placeholder="1234567" pattern="\d{7}" required title="Exactly 7 digits">`)
-	b.WriteString(`</div>`)
-	b.WriteString(`<div class="form-group">`)
 	b.WriteString(`<label for="longNumber">10-20 Digit Number</label>`)
 	b.WriteString(`<input type="text" id="longNumber" data-bind:long-number value="` + template.HTMLEscapeString(longNumber) + `" placeholder="1234567890" pattern="\d{10,20}" required title="Between 10 and 20 digits">`)
-	b.WriteString(`</div>`)
 	b.WriteString(`<button type="submit">Store Numbers</button>`)
 	if errMsg != "" {
 		b.WriteString(`<div class="message error">` + template.HTMLEscapeString(errMsg) + `</div>`)
@@ -283,11 +255,12 @@ func (a *App) renderAppFragment(msg, errMsg string, signals *Signals, entries []
 		b.WriteString(`<div class="message success">` + template.HTMLEscapeString(msg) + `</div>`)
 	}
 	b.WriteString(`</form>`)
+	b.WriteString(`</article>`)
 
 	if len(entries) > 0 {
 		b.WriteString(`<h2>Stored Numbers</h2>`)
 		b.WriteString(`<table>`)
-		b.WriteString(`<thead><tr><th>ID</th><th>7-Digit</th><th>10-20 Digit</th><th>Created</th></tr></thead>`)
+		b.WriteString(`<thead><tr><th scope="col">ID</th><th scope="col">7-Digit</th><th scope="col">10-20 Digit</th><th scope="col">Created</th></tr></thead>`)
 		b.WriteString(`<tbody>`)
 		for _, e := range entries {
 			b.WriteString(`<tr>`)
