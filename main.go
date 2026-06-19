@@ -202,7 +202,7 @@ func pageTemplate(content string) string {
 		.message.success { color: var(--pico-ins-color); }
 		.empty { color: var(--pico-muted-color); font-style: italic; }
 	</style>
-	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0/bundles/datastar.js"></script>
+	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.2/bundles/datastar.js"></script>
 </head>
 <body>
 	<main class="container">
