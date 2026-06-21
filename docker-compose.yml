@@ -2,8 +2,11 @@ services:
   app:
     build: .
     ports:
-      - "8080:8080"
+      - "7085:7085"
     environment:
-      - PORT=8080
+      - PORT=7085
     volumes:
-      - ./numbers.db:/numbers.db
+      - numberstore-data:/data
+
+volumes:
+  numberstore-data:
